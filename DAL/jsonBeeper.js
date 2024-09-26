@@ -10,8 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import jsonfile from 'jsonfile';
 const DB_FILE_PATH = process.env.DB_FILE_PATH || './data/db.json';
 export const readFromJsonFile = () => __awaiter(void 0, void 0, void 0, function* () {
-    const data = yield jsonfile.readFile(DB_FILE_PATH, 'utf-8');
-    return data;
+    const beepers = yield jsonfile.readFile(DB_FILE_PATH);
+    return beepers;
 });
 export const writeBeeperToJsonFile = (beepersOrSingleBeeper_1, ...args_1) => __awaiter(void 0, [beepersOrSingleBeeper_1, ...args_1], void 0, function* (beepersOrSingleBeeper, writeAll = false) {
     if (writeAll) {

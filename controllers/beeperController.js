@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { createBeeper, getAllBeepers } from '../services/beeperService.js';
+import { createBeeper, getAllBeepers, getBeeperById, updateBeeperStatus } from '../services/beeperService.js';
 export const createBeeperController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { name } = req.body;
     if (!name) {
@@ -28,5 +28,32 @@ export const getAllBeepersController = (req, res) => __awaiter(void 0, void 0, v
     }
     catch (e) {
         res.status(500).send({ error: 'Server error' });
+    }
+});
+export const getBeeperByIdController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    try {
+        const beeper = yield getBeeperById(id);
+        if (!beeper) {
+            return res.status(404).send({ error: 'Beeper not found' });
+        }
+        return res.status(200).send(beeper);
+    }
+    catch (e) {
+        return res.status(500).send({ error: 'internal server error' });
+    }
+});
+export const updateBeeperStatusController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const { status, lat, lon } = req.body;
+    if (!id || !status) {
+        return res.status(400).send({ error: 'ID and status are required' });
+    }
+    try {
+        const updatedBeeper = yield updateBeeperStatus(id, status, lat, lon);
+        return res.status(200).send(updatedBeeper);
+    }
+    catch (error) {
+        return res.status(500).send({ error: 'internal server error' });
     }
 });

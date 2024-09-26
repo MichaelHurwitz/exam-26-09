@@ -5,8 +5,8 @@ const DB_FILE_PATH = process.env.DB_FILE_PATH || './data/db.json';
 
 
 export const readFromJsonFile = async (): Promise<Beeper[]> => {
-    const data: Beeper[] = await jsonfile.readFile(DB_FILE_PATH, 'utf-8');
-    return data;
+    const beepers: Beeper[] = await jsonfile.readFile(DB_FILE_PATH);
+    return beepers;
 };
 
 export const writeBeeperToJsonFile = async (beepersOrSingleBeeper: Beeper[] | Beeper, writeAll: boolean = false): Promise<void> => {

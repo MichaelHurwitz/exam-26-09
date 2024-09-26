@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
-import { createBeeper, getAllBeepers } from '../services/beeperService.js';
+import { createBeeper, getAllBeepers, getBeeperById, updateBeeperStatus } from '../services/beeperService.js';
+import { BeeperStatus } from '../models/beeper.js';
 
 
 export const createBeeperController = async (req: Request, res: Response) => {
@@ -25,3 +26,33 @@ export const getAllBeepersController = async (req: Request, res: Response) => {
         res.status(500).send({ error: 'Server error'});
     }
 }
+
+export const getBeeperByIdController = async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    try {
+        const beeper = await getBeeperById(id);
+        if (!beeper) {
+            return res.status(404).send({ error: 'Beeper not found'});
+        }
+        return res.status(200).send(beeper);
+    } catch (e) {
+        return res.status(500).send({ error: 'internal server error'});
+    }
+};
+
+export const updateBeeperStatusController = async (req: Request, res: Response) => {
+    const { id } = req.params;  
+    const { status, lat, lon } = req.body;  
+
+    if (!id || !status) {
+        return res.status(400).send({ error: 'ID and status are required' });
+    }
+
+    try {
+        const updatedBeeper = await updateBeeperStatus(id, status as BeeperStatus, lat, lon);
+        return res.status(200).send(updatedBeeper);
+    } catch (error) {
+        return res.status(500).send({ error: 'internal server error' });
+    }
+};

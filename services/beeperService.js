@@ -7,20 +7,70 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { v4 as uuidv4 } from 'uuid';
+import { BeeperStatus } from "../models/beeper.js";
+import { v4 as uuidv4 } from "uuid";
 import { readFromJsonFile, writeBeeperToJsonFile } from "../DAL/jsonBeeper.js";
+import { coordinates } from "../coordinates/coordinates.js";
 export const createBeeper = (name) => __awaiter(void 0, void 0, void 0, function* () {
     const beepers = yield readFromJsonFile();
+    const existingBeeper = beepers.find((b) => b.name === name);
+    if (existingBeeper) {
+        throw new Error("Beeper already exists");
+    }
     const newBeeper = {
         id: uuidv4(),
         name,
-        status: 'manufactured',
-        created_at: new Date,
+        status: BeeperStatus.Manufactured,
+        created_at: new Date(),
     };
-    beepers.push(newBeeper);
-    yield writeBeeperToJsonFile(beepers);
+    yield writeBeeperToJsonFile(newBeeper);
     return newBeeper;
 });
 export const getAllBeepers = () => __awaiter(void 0, void 0, void 0, function* () {
     return yield readFromJsonFile();
+});
+export const getBeeperById = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const beepers = yield getAllBeepers();
+    const beeper = beepers.find((b) => b.id === id);
+    return beeper || null;
+});
+const areCoordinatesValid = (lat, lon) => {
+    return coordinates.some((c) => c.lat === lat && c.lon === lon);
+};
+const scheduleDetonation = (beeper) => __awaiter(void 0, void 0, void 0, function* () {
+    setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
+        const beepers = yield getAllBeepers();
+        const beeperIndex = beepers.findIndex((b) => b.id === beeper.id);
+        if (beeperIndex === -1) {
+            throw new Error("Beeper not found for detonation");
+        }
+        beepers[beeperIndex].status = BeeperStatus.Detonated;
+        beepers[beeperIndex].exploded_at = new Date();
+        yield writeBeeperToJsonFile(beepers, true);
+    }), 10000);
+});
+export const updateBeeperStatus = (id, newStatus, lat, lon) => __awaiter(void 0, void 0, void 0, function* () {
+    const beepers = yield getAllBeepers();
+    const beeperIndex = beepers.findIndex((b) => b.id === id);
+    if (beeperIndex === -1) {
+        throw new Error("Beeper not found");
+    }
+    const beeper = beepers[beeperIndex];
+    if (lat != undefined && lon != undefined) {
+        if (areCoordinatesValid(lat, lon)) {
+            beeper.status = BeeperStatus.Deployed;
+            beeper.latitude = lat;
+            beeper.longitude = lon;
+            scheduleDetonation(beeper);
+        }
+        else {
+            throw new Error("Invalid coordinates");
+        }
+    }
+    else {
+        beeper.status = newStatus;
+    }
+    beepers[beeperIndex] = beeper;
+    yield writeBeeperToJsonFile(beepers, true);
+    return beeper;
 });
