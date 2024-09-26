@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createBeeper, getAllBeepers, getBeeperById, updateBeeperStatus } from '../services/beeperService.js';
+import { createBeeper, deleteBeeper, getAllBeepers, getBeeperById, getBeepersByStatus, updateBeeperStatus } from '../services/beeperService.js';
 import { BeeperStatus } from '../models/beeper.js';
 
 
@@ -54,5 +54,27 @@ export const updateBeeperStatusController = async (req: Request, res: Response) 
         return res.status(200).send(updatedBeeper);
     } catch (error) {
         return res.status(500).send({ error: 'internal server error' });
+    }
+};
+
+export const deleteBeeperController = async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    try {
+        await deleteBeeper(id);
+        return res.status(204).send();
+    } catch (error) {
+        return res.status(500).send({ error: 'internal server error' });
+    }
+};
+
+export const getBeepersByStatusController = async (req: Request, res: Response) => {
+    const { status } = req.params;
+
+    try {
+        const beepers = await getBeepersByStatus(status as BeeperStatus);
+        res.status(200).send(beepers);
+    } catch (error) {
+        res.status(500).send({ error: 'internal server error' });
     }
 };

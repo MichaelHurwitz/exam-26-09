@@ -87,3 +87,34 @@ export const updateBeeperStatus = async (
   await writeBeeperToJsonFile(beepers, true);
   return beeper;
 };
+
+export const deleteBeeper = async (
+  id: string
+): Promise<{ message: string }> => {
+  const beepers = await getAllBeepers();
+
+  const beeperIndex = beepers.findIndex((beeper) => beeper.id === id);
+  if (beeperIndex === -1) {
+    throw new Error("Beeper not found");
+  }
+
+  beepers.splice(beeperIndex, 1);
+
+  await writeBeeperToJsonFile(beepers, true);
+
+  return { message: `Beeper with ID: ${id} has been deleted successfully` };
+};
+
+export const getBeepersByStatus = async (
+  status: BeeperStatus
+): Promise<Beeper[]> => {
+  const beepers = await getAllBeepers();
+
+  const beepersByStatus = beepers.filter((beeper) => beeper.status === status);
+
+  if (beepersByStatus.length === 0) {
+    throw new Error(`No beepers found with status: ${status}`);
+  }
+
+  return beepersByStatus;
+};

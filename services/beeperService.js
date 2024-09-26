@@ -74,3 +74,21 @@ export const updateBeeperStatus = (id, newStatus, lat, lon) => __awaiter(void 0,
     yield writeBeeperToJsonFile(beepers, true);
     return beeper;
 });
+export const deleteBeeper = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const beepers = yield getAllBeepers();
+    const beeperIndex = beepers.findIndex((beeper) => beeper.id === id);
+    if (beeperIndex === -1) {
+        throw new Error("Beeper not found");
+    }
+    beepers.splice(beeperIndex, 1);
+    yield writeBeeperToJsonFile(beepers, true);
+    return { message: `Beeper with ID: ${id} has been deleted successfully` };
+});
+export const getBeepersByStatus = (status) => __awaiter(void 0, void 0, void 0, function* () {
+    const beepers = yield getAllBeepers();
+    const beepersByStatus = beepers.filter((beeper) => beeper.status === status);
+    if (beepersByStatus.length === 0) {
+        throw new Error(`No beepers found with status: ${status}`);
+    }
+    return beepersByStatus;
+});

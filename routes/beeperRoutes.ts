@@ -1,5 +1,5 @@
 import express, { Router } from "express";
-import { createBeeperController, getAllBeepersController, updateBeeperStatusController } from "../controllers/beeperController.js";
+import { createBeeperController, deleteBeeperController, getAllBeepersController, getBeeperByIdController, getBeepersByStatusController, updateBeeperStatusController } from "../controllers/beeperController.js";
 import { getBeeperById } from "../services/beeperService.js";
 
 const router: Router = express.Router();
@@ -9,10 +9,12 @@ router.route('/')
 .get(getAllBeepersController);
 
 router.route('/:id')
- .get(getBeeperById);
+ .get(getBeeperByIdController)
+ .delete(deleteBeeperController);
 
 router.route('/:id/status').put(updateBeeperStatusController);
 
+router.get('/status/:status', getBeepersByStatusController);
 
 
 

@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { createBeeper, getAllBeepers, getBeeperById, updateBeeperStatus } from '../services/beeperService.js';
+import { createBeeper, deleteBeeper, getAllBeepers, getBeeperById, getBeepersByStatus, updateBeeperStatus } from '../services/beeperService.js';
 export const createBeeperController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { name } = req.body;
     if (!name) {
@@ -55,5 +55,25 @@ export const updateBeeperStatusController = (req, res) => __awaiter(void 0, void
     }
     catch (error) {
         return res.status(500).send({ error: 'internal server error' });
+    }
+});
+export const deleteBeeperController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    try {
+        yield deleteBeeper(id);
+        return res.status(204).send();
+    }
+    catch (error) {
+        return res.status(500).send({ error: 'internal server error' });
+    }
+});
+export const getBeepersByStatusController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { status } = req.params;
+    try {
+        const beepers = yield getBeepersByStatus(status);
+        res.status(200).send(beepers);
+    }
+    catch (error) {
+        res.status(500).send({ error: 'internal server error' });
     }
 });
