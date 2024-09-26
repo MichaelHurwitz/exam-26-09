@@ -6,22 +6,22 @@ export const createBeeperController = async (req: Request, res: Response) => {
     const { name } = req.body;
 
     if (!name) {
-        res.send({ error: 'Name is required' }).status(400);
+        res.status(400).send({ error: 'Name is required' });
     }
 
     try {
         const newBeeper = await createBeeper(name);
-        res.send({ newBeeper }).status(201);
+        res.status(201).send({ newBeeper });
     } catch (e) {
-        res.send({ error: 'Server error' })
+        res.status(500).send({ error: 'Server error' })
     }
 };
 
 export const getAllBeepersController = async (req: Request, res: Response) => {
     try {
         const beepers = await getAllBeepers();
-        res.send({ beepers }).status(200);
+        res.status(200).send({ beepers });
     } catch (e) {
-        res.send({ error: 'Server error'}).status(500);
+        res.status(500).send({ error: 'Server error'});
     }
 }
